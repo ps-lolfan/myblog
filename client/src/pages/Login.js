@@ -3,39 +3,34 @@ import { Form, Button } from "semantic-ui-react";
 import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 
+import { useForm } from "../util/hooks";
+
 function Login(props) {
   const [errors, setErrors] = useState({});
-  const [values, setValues] = useState({
+
+  const { onChange, onSubmit, values } = useForm(loginUserCallback, {
     username: "",
-    email: "",
     password: "",
-    confirmPassword: "",
   });
 
-  const onChange = (event) => {
-    setValues({ ...values, [event.target.name]: event.target.value });
-  };
-
-  const [addUser, { loading }] = useMutation(REGISTER_USER, {
+  const [loginUser, { loading }] = useMutation(LOGIN_USER, {
     update(_, result) {
       props.history.push("/");
     },
 
     onError(err) {
-      console.log(err.graphQLErrors[0].extensions.exception.errors);
       setErrors(err.graphQLErrors[0].extensions.exception.errors);
     },
     variables: values,
   });
 
-  const onSubmit = (event) => {
-    event.preventDefault();
-    addUser();
-  };
+  function loginUserCallback() {
+    loginUser();
+  }
   return (
     <div className="form-container">
       <Form onSubmit={onSubmit} noValidate className={loading ? "loading" : ""}>
-        <h1>Register</h1>
+        <h1>Login</h1>
         <Form.Input
           label="Username"
           placeholder="Username"
@@ -45,15 +40,7 @@ function Login(props) {
           value={values.username}
           onChange={onChange}
         />
-        <Form.Input
-          label="Email"
-          placeholder="Email"
-          type="text"
-          name="email"
-          error={errors.email ? true : false}
-          value={values.email}
-          onChange={onChange}
-        />
+
         <Form.Input
           label="Password"
           placeholder="Password"
@@ -63,18 +50,9 @@ function Login(props) {
           value={values.password}
           onChange={onChange}
         />
-        <Form.Input
-          label="Confirm Password"
-          placeholder="Confirm Password"
-          type="password"
-          error={errors.confirmPassword ? true : false}
-          name="confirmPassword"
-          value={values.confirmPassword}
-          onChange={onChange}
-        />
 
         <Button type="submit" primary onClick={onSubmit}>
-          Register
+          Login
         </Button>
       </Form>
 
@@ -91,21 +69,9 @@ function Login(props) {
   );
 }
 
-const REGISTER_USER = gql`
-  mutation register(
-    $username: String!
-    $email: String!
-    $password: String!
-    $confirmPassword: String!
-  ) {
-    register(
-      registerInput: {
-        username: $username
-        email: $email
-        password: $password
-        confirmPassword: $confirmPassword
-      }
-    ) {
+const LOGIN_USER = gql`
+  mutation login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
       id
       email
       username
