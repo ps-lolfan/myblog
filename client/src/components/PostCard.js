@@ -30,7 +30,7 @@ function PostCard({
       <Card.Content extra>
         <Button as="div" labelPosition="right" onClick={likePost}>
           <Button color="teal" basic>
-            <Icon name="heart " />
+            <Icon name="heart" />
           </Button>
           <Label basic color="teal" pointing="left">
             {likeCount}
