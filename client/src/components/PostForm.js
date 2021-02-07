@@ -1,14 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import gql from "graphql-tag";
 
 import { useMutation } from "@apollo/react-hooks";
 
 import { FETCH_ALL_POSTS } from "../util/graphql";
 
-import { Button, Form } from "semantic-ui-react";
+import { Button, Form, Menu } from "semantic-ui-react";
 import { useForm } from "../util/hooks";
 
+import { AuthContext } from "../context/auth";
+
 function PostForm() {
+  const { user } = useContext(AuthContext);
   const { values, onChange, onSubmit } = useForm(createPostCallback, {
     body: "",
   });
@@ -23,6 +26,7 @@ function PostForm() {
       proxy.writeQuery({ query: FETCH_ALL_POSTS, data });
       values.body = "";
     },
+    errorPolicy: "all",
   });
 
   function createPostCallback() {
@@ -30,20 +34,33 @@ function PostForm() {
   }
 
   return (
-    <Form onSubmit={onSubmit}>
-      <h2>Create a post:</h2>
-      <Form.Field>
-        <Form.Input
-          placeholder="Hi"
-          name="body"
-          onChange={onChange}
-          value={values.body}
-        />
-        <Button type="Submit" color="teal">
-          Submit
-        </Button>
-      </Form.Field>
-    </Form>
+    <>
+      <Form onSubmit={onSubmit}>
+        <h2>
+          Hello
+          <Menu.Item name={user.username} />
+        </h2>
+        <Form.Field>
+          <Form.Input
+            placeholder="What's in your mind ?"
+            name="body"
+            onChange={onChange}
+            value={values.body}
+            error={error ? true : false}
+          />
+          <Button type="Submit" color="teal">
+            Share
+          </Button>
+        </Form.Field>
+      </Form>
+      {error && (
+        <div className="ui error message" style={{ marginBottom: 20 }}>
+          <ul className="list">
+            <li>{error.graphQLErrors[0].message}</li>
+          </ul>
+        </div>
+      )}
+    </>
   );
 }
 

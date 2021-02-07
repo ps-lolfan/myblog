@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
-import { Grid } from "semantic-ui-react";
+import { Grid, Transition } from "semantic-ui-react";
 
 import { AuthContext } from "../context/auth";
 
@@ -19,28 +19,37 @@ function Home() {
   }
 
   return (
-    <Grid columns={3}>
-      <Grid.Row className="page-title">
-        <h1>Recent Posts</h1>
-      </Grid.Row>
-      <Grid.Row>
+    <>
+      <Grid columns={1}>
         {user && (
-          <Grid.Column>
-            <PostForm />
-          </Grid.Column>
-        )}
-        {loading ? (
-          <h1>Loadin posts...</h1>
-        ) : (
-          posts &&
-          posts.map((post) => (
-            <Grid.Column key={post.id} style={{ marginBottom: 20 }}>
-              <PostCard post={post} />
+          <Grid.Row fluid="true">
+            <Grid.Column>
+              <PostForm />
             </Grid.Column>
-          ))
+          </Grid.Row>
         )}
-      </Grid.Row>
-    </Grid>
+      </Grid>
+      <Grid columns={3}>
+        <Grid.Row className="page-title">
+          <h1>Recent Posts</h1>
+        </Grid.Row>
+
+        <Grid.Row>
+          {loading ? (
+            <h1>Loadin posts...</h1>
+          ) : (
+            <Transition.Group>
+              {posts &&
+                posts.map((post) => (
+                  <Grid.Column key={post.id} style={{ marginBottom: 20 }}>
+                    <PostCard post={post} />
+                  </Grid.Column>
+                ))}
+            </Transition.Group>
+          )}
+        </Grid.Row>
+      </Grid>
+    </>
   );
 }
 
