@@ -1,41 +1,21 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
-import gql from "graphql-tag";
 import { Grid } from "semantic-ui-react";
+
+import { AuthContext } from "../context/auth";
+
+import { FETCH_ALL_POSTS } from "../util/graphql";
+
 import PostCard from "../components/PostCard";
-
-const FETCH_ALL_POSTS = gql`
-  {
-    getPosts {
-      id
-      body
-      createdAt
-      username
-      likeCount
-
-      likes {
-        username
-      }
-
-      commentCount
-      comments {
-        id
-        username
-        createdAt
-        body
-      }
-    }
-  }
-`;
+import PostForm from "../components/PostForm";
 
 function Home() {
-  const { loading, data } = useQuery(FETCH_ALL_POSTS, {
-    fetchPolicy: "network-only",
-  });
+  const { user } = useContext(AuthContext);
+  const { loading, data: getPosts } = useQuery(FETCH_ALL_POSTS);
 
   let posts;
-  if (data) {
-    posts = data.getPosts;
+  if (getPosts) {
+    posts = getPosts.getPosts;
   }
 
   return (
@@ -44,6 +24,11 @@ function Home() {
         <h1>Recent Posts</h1>
       </Grid.Row>
       <Grid.Row>
+        {user && (
+          <Grid.Column>
+            <PostForm />
+          </Grid.Column>
+        )}
         {loading ? (
           <h1>Loadin posts...</h1>
         ) : (
