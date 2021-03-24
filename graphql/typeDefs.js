@@ -1,6 +1,14 @@
 const { gql } = require("apollo-server");
 
 module.exports = gql`
+  type Song {
+    id: ID!
+    artist: String!
+    title: String!
+    img_src: String!
+    src: String!
+  }
+
   type Post {
     id: ID!
     body: String!
@@ -40,6 +48,7 @@ module.exports = gql`
   }
   type Query {
     getPosts: [Post]
+    getSongs: [Song]
     getPost(postId: ID!): Post
   }
   type Mutation {

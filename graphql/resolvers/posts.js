@@ -1,5 +1,6 @@
 const { AuthenticationError, UserInputError } = require("apollo-server");
 const Post = require("../../models/Post");
+const Songs = require("../../models/Songs");
 const checkAuth = require("../../utils/check-auth");
 
 module.exports = {
@@ -8,6 +9,15 @@ module.exports = {
       try {
         const posts = await Post.find().sort({ createdAt: -1 });
         return posts;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+
+    async getSongs() {
+      try {
+        const songs = await Songs.find();
+        return songs;
       } catch (err) {
         throw new Error(err);
       }
